@@ -3,10 +3,11 @@ var path = require('path')
 var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+// less文件抽取配置项
 var extractLess = new ExtractTextPlugin({
     filename: "/css/[name].[contenthash].css",
     disable: process.env.NODE_ENV === "dev"
-});
+})
 
 module.exports = {
     entry: {
