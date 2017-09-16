@@ -5,7 +5,7 @@
     "main": "index.jsx",
     "scripts": {
         "start": "set NODE_ENV=dev&& webpack-dev-server --progress --color",
-        "build": "rm -rf ./build && set NODE_ENV=production && webpack --config ./webpack.production.js --progress --colors",
+        "build": "rd/s/q build&& set NODE_ENV=production&& webpack --config ./webpack.production.js --progress --colors",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],

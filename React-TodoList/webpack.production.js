@@ -3,6 +3,10 @@ var path = require('path')
 var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var extractLess = new ExtractTextPlugin({
+    filename: "/css/[name].[contenthash].css",
+    disable: process.env.NODE_ENV === "dev"
+});
 
 module.exports = {
     entry: {
@@ -27,35 +31,40 @@ module.exports = {
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
-                use: [
-                    { loader: 'style-loader' },
-                    { loader: 'css-loader' },
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            plugins: (loader) => [
-                                require('autoprefixer')()  // 调用autoprefixer插件，例如display: flex
-                            ]
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        { loader: 'css-loader', options: { importLoaders: 1 } },
+                        {
+                            loader: 'postcss-loader',
+                            options: {
+                                plugins: () => [
+                                    require('autoprefixer')()  // 调用autoprefixer插件，例如display: flex
+                                ]
+                            }
                         }
-                    }
-                ]
+                    ]
+                })
             },
             {
                 test: /\.less$/,
                 exclude: /node_modules/,
-                use: [
-                    { loader: 'style-loader' },
-                    { loader: 'css-loader' },
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            plugins: (loader) => [
-                                require('autoprefixer')()
-                            ]
-                        }
-                    },
-                    { loader: 'less-loader' }
-                ]
+                use: extractLess.extract({
+                    use: [
+                        { loader: "css-loader" },
+                        {
+                            loader: 'postcss-loader',
+                            options: {
+                                plugins: () => [
+                                    require('autoprefixer')()  // 调用autoprefixer插件，例如display: flex
+                                ]
+                            }
+                        },
+                        { loader: "less-loader" }
+                    ],
+                    // use style-loader in development
+                    fallback: "style-loader"
+                })
             },
             {
                 test: /\.(png|gif|jpg|jpeg|bmp)$/i,
@@ -64,7 +73,7 @@ module.exports = {
                         loader: 'url-loader',
                         options: {
                             limit: 5000,
-                            name: 'images/[name].[chunkhash:8].[ext]'
+                            name: 'images/[name].[hash:8].[ext]'
                         }
                     }
                 ]
@@ -76,7 +85,7 @@ module.exports = {
                         loader: 'url-loader',
                         options: {
                             limit: 5000,
-                            name: 'fonts/[name].[chunkhash:8].[ext]'
+                            name: 'fonts/[name].[hash:8].[ext]'
                         }
                     }
                 ]
@@ -85,7 +94,7 @@ module.exports = {
     },
     plugins: [
         // webpack 内置的 banner-plugin
-        new webpack.BannerPlugin("Copyright by wangfupeng1988@github.com."),
+        new webpack.BannerPlugin("Copyright hushiking@github.com."),
 
         // html 模板插件
         new HtmlWebpackPlugin({
@@ -110,8 +119,11 @@ module.exports = {
             }
         }),
 
-        // 分离CSS和JS文件
-        new ExtractTextPlugin('/css/[name].[chunkhash:8].css'),
+        // 分离CSS和JS文件，抽取less的时候会一并抽取css文件，这里可以省略
+        // new ExtractTextPlugin('/css/[name].[chunkhash:8].css'),
+
+        // 抽取less文件
+        extractLess,
 
         // 提供公共代码
         new webpack.optimize.CommonsChunkPlugin({

@@ -10,6 +10,6 @@
 
 ## 项目运行
 
-1. `npm install`
+1. 在当前目录下打开终端， `npm install`
 1. 开发环境： `npm start`
-1. 生产环境： `npm run build`
+1. 项目打包上线： `npm run build`

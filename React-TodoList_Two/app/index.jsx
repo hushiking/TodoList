@@ -14,6 +14,6 @@ if (__DEV__) {
 }
 
 ReactDom.render(
-  <TodoList/>,
-  document.getElementById('root')
+    <TodoList />,
+    document.getElementById('root')
 )
